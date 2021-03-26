@@ -13,9 +13,11 @@ n = 1
 rows = len(A) - 1
 cols = len(A[1]) - 1
 
+smt = ''
+solver = Solver()
+
 # Replace 0s with variable numbers
 # -i -> variable x_i
-n = 1
 for r in range(1, rows):
     for c in range(cols):
         if A[r][c] == 0:
@@ -62,15 +64,13 @@ rhs = A[0][-1] # sum
 smt += '(assert (= (+ {}) {}))\n'.format(lhs, rhs)
 
 # Solve the puzzle using Z3
-s = Solver()
-formula = parse_smt2_string(smt)
-s.add(formula)
+solver.add(parse_smt2_string(smt))
 
-if s.check() == unsat:
+if solver.check() == unsat:
     print('Unable to solve Challenger!')
     exit(1)
 
-model = s.model()
+model = solver.model()
 
 # Replace variables with solutions (from model)
 for r in range(1, len(A) - 1):
